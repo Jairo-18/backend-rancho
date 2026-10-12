@@ -25,6 +25,12 @@ import { placeholderSvg } from './placeholder-image.js';
  * (por correo, slug o nombre+fecha). Nunca modifica ni borra registros existentes.
  */
 
+/**
+ * SEED_SAMPLE_DATA=false (producción): solo admin, ajustes por defecto y
+ * festivos; sin cabañas, cabalgatas ni productos de ejemplo.
+ */
+const SAMPLE_DATA = process.env.SEED_SAMPLE_DATA !== 'false';
+
 const storage = new LocalStorageService({
   rootDir: appConfig.uploads.dir,
   baseUrl: appConfig.app.baseUrl,
@@ -76,12 +82,16 @@ async function seedAdmin(manager: EntityManager): Promise<void> {
 }
 
 async function seedSettings(manager: EntityManager): Promise<void> {
-  const values: Partial<typeof DEFAULT_SETTINGS> = {
-    ...DEFAULT_SETTINGS,
-    whatsappNumber: '573001234567', // reemplazar por el número real desde Ajustes
-    address: 'Vereda El Porvenir, km 4 vía a la montaña',
-    city: 'Colombia',
-  };
+  // En producción (sin datos de ejemplo) el WhatsApp y la dirección quedan vacíos
+  // para que el panel avise que faltan; nunca se publica un número inventado.
+  const values: Partial<typeof DEFAULT_SETTINGS> = SAMPLE_DATA
+    ? {
+        ...DEFAULT_SETTINGS,
+        whatsappNumber: '573001234567', // reemplazar por el número real desde Ajustes
+        address: 'Vereda El Porvenir, km 4 vía a la montaña',
+        city: 'Colombia',
+      }
+    : DEFAULT_SETTINGS;
   await manager
     .createQueryBuilder()
     .insert()
@@ -305,9 +315,13 @@ async function main(): Promise<void> {
     await dataSource.transaction(async (manager) => {
       await seedAdmin(manager);
       await seedSettings(manager);
-      await seedRooms(manager);
-      await seedHorseback(manager);
-      await seedProducts(manager);
+      if (SAMPLE_DATA) {
+        await seedRooms(manager);
+        await seedHorseback(manager);
+        await seedProducts(manager);
+      } else {
+        log('sin datos de ejemplo (SEED_SAMPLE_DATA=false)');
+      }
       await seedPriceRules(manager);
     });
     console.log('Seed completado ✔');

@@ -27,7 +27,8 @@
     "migration:show": "pnpm run build && typeorm migration:show -d dist/typeorm.config.js",
     "migration:run:prod": "node --env-file-if-exists=.env.production node_modules/typeorm/cli.js migration:run -d dist/typeorm.config.js",
     "seed": "pnpm run build && node dist/src/seeds/seed.js",
-    "migration:revert:prod": "node --env-file-if-exists=.env.production node_modules/typeorm/cli.js migration:revert -d dist/typeorm.config.js"
+    "migration:revert:prod": "node --env-file-if-exists=.env.production node_modules/typeorm/cli.js migration:revert -d dist/typeorm.config.js",
+    "seed:prod": "node --env-file-if-exists=.env.production dist/src/seeds/seed.js"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
