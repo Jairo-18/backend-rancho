@@ -63,10 +63,11 @@ export class RoomImageService {
       const images = await this.imagesOf(manager, roomId);
       const image = images.find((candidate) => candidate.id === imageId);
       if (!image) throw new NotFoundException('Foto no encontrada');
+      // Sin fotos no se puede mostrar: si era la última, queda oculta.
       if (room.isActive && images.length - 1 < ROOM_MIN_IMAGES) {
-        throw new BadRequestException(
-          `Una habitación activa debe tener al menos ${ROOM_MIN_IMAGES} foto. Sube otra antes de borrar esta o desactiva la habitación.`,
-        );
+        await manager
+          .getRepository(Room)
+          .update({ id: roomId }, { isActive: false });
       }
       await manager.getRepository(RoomImage).delete({ id: imageId });
       const remaining = images.filter((candidate) => candidate.id !== imageId);

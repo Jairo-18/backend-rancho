@@ -49,4 +49,20 @@ export class ProductImageService {
       await this._uploadsService.deleteQuietly([product.imageStorageKey]);
     }
   }
+
+  /** Quita la foto. Sin foto el producto no se puede mostrar: queda oculto. */
+  async remove(productId: string): Promise<void> {
+    const product = await this._productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND);
+    if (!product.imageUrl) return;
+    await this._productRepository.update(
+      { id: productId },
+      { imageUrl: null, imageStorageKey: null, isActive: false },
+    );
+    if (product.imageStorageKey) {
+      await this._uploadsService.deleteQuietly([product.imageStorageKey]);
+    }
+  }
 }

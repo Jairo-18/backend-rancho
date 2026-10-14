@@ -47,6 +47,11 @@ export class ProductUC {
     return this._productService.remove(id);
   }
 
+  async removeImage(id: string): Promise<ProductDto> {
+    await this._productImageService.remove(id);
+    return this._productService.findById(id);
+  }
+
   async setImage(id: string, file: Buffer | undefined): Promise<ProductDto> {
     await this._productImageService.set(id, file);
     return this._productService.findById(id);

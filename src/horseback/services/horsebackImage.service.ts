@@ -59,10 +59,11 @@ export class HorsebackImageService {
       const images = await this.imagesOf(manager, horsebackId);
       const image = images.find((candidate) => candidate.id === imageId);
       if (!image) throw new NotFoundException('Foto no encontrada');
+      // Sin fotos no se puede mostrar: si era la última, queda oculta.
       if (ride.isActive && images.length - 1 < HORSEBACK_MIN_IMAGES) {
-        throw new BadRequestException(
-          'Una cabalgata activa debe tener al menos una foto. Sube otra antes o desactívala.',
-        );
+        await manager
+          .getRepository(Horseback)
+          .update({ id: horsebackId }, { isActive: false });
       }
       await manager.getRepository(HorsebackImage).delete({ id: imageId });
       await this.applyOrder(

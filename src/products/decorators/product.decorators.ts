@@ -87,3 +87,12 @@ export function DeletePermanentlyProductDocs() {
     ApiNoContentResponse(),
   );
 }
+
+export function RemoveProductImageDocs() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Quita la foto del producto (queda oculto hasta subir otra)',
+    }),
+    ApiOkResponse({ type: ProductDto }),
+  );
+}

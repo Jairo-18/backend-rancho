@@ -20,6 +20,7 @@ import {
   DeletePermanentlyProductDocs,
   FindAdminProductsDocs,
   FindProductByIdDocs,
+  RemoveProductImageDocs,
   SetProductImageDocs,
   UpdateProductDocs,
 } from '../decorators/product.decorators.js';
@@ -74,6 +75,12 @@ export class ProductController {
   @DeletePermanentlyProductDocs()
   removePermanently(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this._productUC.remove(id);
+  }
+
+  @Delete(':id/image')
+  @RemoveProductImageDocs()
+  removeImage(@Param('id', ParseUUIDPipe) id: string): Promise<ProductDto> {
+    return this._productUC.removeImage(id);
   }
 
   @Put(':id/image')
