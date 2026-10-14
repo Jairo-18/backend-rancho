@@ -44,6 +44,10 @@ export class HorsebackUC {
     return this._horsebackService.deactivate(id);
   }
 
+  remove(id: string): Promise<void> {
+    return this._horsebackService.remove(id);
+  }
+
   async addImage(id: string, file: Buffer | undefined): Promise<HorsebackDto> {
     await this._horsebackImageService.add(id, file);
     return this._horsebackService.findById(id);

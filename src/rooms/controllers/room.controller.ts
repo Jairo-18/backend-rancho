@@ -16,6 +16,7 @@ import { AdminListQueryDto } from '../../shared/dtos/admin-list-query.dto.js';
 import {
   CreateRoomDocs,
   DeleteRoomDocs,
+  DeletePermanentlyRoomDocs,
   DeleteRoomImageDocs,
   FindAdminRoomsDocs,
   FindRoomByIdDocs,
@@ -67,6 +68,12 @@ export class RoomController {
   @DeleteRoomDocs()
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this._roomUC.deactivate(id);
+  }
+
+  @Delete(':id/permanent')
+  @DeletePermanentlyRoomDocs()
+  removePermanently(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this._roomUC.remove(id);
   }
 
   @Post(':id/images')

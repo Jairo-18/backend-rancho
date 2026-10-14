@@ -3,11 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   type Relation,
   UpdateDateColumn,
 } from 'typeorm';
+import { Product } from './product.entity.js';
 import { RoomImage } from './roomImage.entity.js';
 
 @Entity('rooms')
@@ -28,6 +31,10 @@ export class Room {
   @Column({ type: 'boolean', default: false })
   hasJacuzzi: boolean;
 
+  /** Lo que incluye, como etiquetas ("Wifi", "2 desayunos"…). */
+  @Column({ type: 'jsonb', default: () => "'[]'" })
+  amenities: string[];
+
   @Column({ type: 'integer', nullable: true })
   capacity: number | null;
 
@@ -45,6 +52,15 @@ export class Room {
 
   @OneToMany(() => RoomImage, (image) => image.room)
   images: Relation<RoomImage[]>;
+
+  /** Productos que se ofrecen junto con la habitación (vino, decoración…). */
+  @ManyToMany(() => Product)
+  @JoinTable({
+    name: 'room_products',
+    joinColumn: { name: 'room_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
+  })
+  products: Relation<Product[]>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

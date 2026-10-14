@@ -10,6 +10,7 @@ import { definedOnly } from '../../shared/utils/defined-only.js';
 import { ilikeContains } from '../../shared/utils/ilike.js';
 import { uniqueSlug } from '../../shared/utils/slug.js';
 import { StorageService } from '../../uploads/services/storage.service.js';
+import { UploadsService } from '../../uploads/services/uploads.service.js';
 import { PRODUCT_NOT_FOUND } from '../constants/product.constants.js';
 import {
   type CreateProductDto,
@@ -23,6 +24,7 @@ export class ProductService {
   constructor(
     private readonly _productRepository: ProductRepository,
     private readonly _storageService: StorageService,
+    private readonly _uploadsService: UploadsService,
   ) {}
 
   async findPublic(): Promise<ProductDto[]> {
@@ -31,6 +33,14 @@ export class ProductService {
       order: { name: 'ASC' },
     });
     return products.map((product) => this.toDto(product));
+  }
+
+  async findPublicBySlug(slug: string): Promise<ProductDto> {
+    const product = await this._productRepository.findOne({
+      where: { slug, isActive: true },
+    });
+    if (!product) throw new NotFoundException(PRODUCT_NOT_FOUND);
+    return this.toDto(product);
   }
 
   async findAdmin({
@@ -104,6 +114,20 @@ export class ProductService {
       { isActive: false },
     );
     if (!result.affected) throw new NotFoundException(PRODUCT_NOT_FOUND);
+  }
+
+  /**
+   * Borrado definitivo: la fila y, en cascada, sus fotos y vínculos; luego los
+   * archivos de las fotos en el almacenamiento.
+   */
+  async remove(id: string): Promise<void> {
+    const entity = await this._productRepository.findOne({
+      where: { id },
+    });
+    if (!entity) throw new NotFoundException(PRODUCT_NOT_FOUND);
+    const keys = entity.imageStorageKey ? [entity.imageStorageKey] : [];
+    await this._productRepository.delete({ id });
+    await this._uploadsService.deleteQuietly(keys);
   }
 
   private toDto(product: Product): ProductDto {

@@ -16,6 +16,7 @@ import { AdminListQueryDto } from '../../shared/dtos/admin-list-query.dto.js';
 import {
   CreateHorsebackDocs,
   DeleteHorsebackDocs,
+  DeletePermanentlyHorsebackDocs,
   DeleteHorsebackImageDocs,
   FindAdminHorsebackListDocs,
   FindHorsebackByIdDocs,
@@ -69,6 +70,12 @@ export class HorsebackController {
   @DeleteHorsebackDocs()
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this._horsebackUC.deactivate(id);
+  }
+
+  @Delete(':id/permanent')
+  @DeletePermanentlyHorsebackDocs()
+  removePermanently(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this._horsebackUC.remove(id);
   }
 
   @Post(':id/images')

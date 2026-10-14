@@ -40,6 +40,12 @@ export class HorsebackImageService {
           storageKey: stored.key,
           position: existing.length,
         });
+        // La primera foto la publica.
+        if (existing.length === 0) {
+          await manager
+            .getRepository(Horseback)
+            .update({ id: horsebackId }, { isActive: true });
+        }
       });
     } catch (error) {
       await this._uploadsService.deleteQuietly([stored.key]);

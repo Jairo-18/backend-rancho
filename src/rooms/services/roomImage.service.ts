@@ -44,6 +44,12 @@ export class RoomImageService {
           position: existing.length,
           isCover: !existing.some((image) => image.isCover),
         });
+        // La primera foto la publica: desde 1 foto ya se puede mostrar.
+        if (existing.length === 0) {
+          await manager
+            .getRepository(Room)
+            .update({ id: roomId }, { isActive: true });
+        }
       });
     } catch (error) {
       await this._uploadsService.deleteQuietly([stored.key]);
@@ -59,7 +65,7 @@ export class RoomImageService {
       if (!image) throw new NotFoundException('Foto no encontrada');
       if (room.isActive && images.length - 1 < ROOM_MIN_IMAGES) {
         throw new BadRequestException(
-          `Una habitación activa debe tener al menos ${ROOM_MIN_IMAGES} fotos. Sube otra antes de borrar esta o desactiva la habitación.`,
+          `Una habitación activa debe tener al menos ${ROOM_MIN_IMAGES} foto. Sube otra antes de borrar esta o desactiva la habitación.`,
         );
       }
       await manager.getRepository(RoomImage).delete({ id: imageId });

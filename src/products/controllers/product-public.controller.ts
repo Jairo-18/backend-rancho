@@ -1,6 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { FindPublicProductsDocs } from '../decorators/product.decorators.js';
+import {
+  FindPublicProductDocs,
+  FindPublicProductsDocs,
+} from '../decorators/product.decorators.js';
 import { ProductDto } from '../dtos/product.dto.js';
 import { ProductUC } from '../useCases/productUC.uc.js';
 
@@ -13,5 +16,11 @@ export class ProductPublicController {
   @FindPublicProductsDocs()
   findAll(): Promise<ProductDto[]> {
     return this._productUC.findPublic();
+  }
+
+  @Get(':slug')
+  @FindPublicProductDocs()
+  findBySlug(@Param('slug') slug: string): Promise<ProductDto> {
+    return this._productUC.findPublicBySlug(slug);
   }
 }

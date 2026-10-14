@@ -19,6 +19,10 @@ export class ProductUC {
     return this._productService.findPublic();
   }
 
+  findPublicBySlug(slug: string): Promise<ProductDto> {
+    return this._productService.findPublicBySlug(slug);
+  }
+
   findAdmin(query: AdminListQueryDto): Promise<ProductDto[]> {
     return this._productService.findAdmin(query);
   }
@@ -37,6 +41,10 @@ export class ProductUC {
 
   deactivate(id: string): Promise<void> {
     return this._productService.deactivate(id);
+  }
+
+  remove(id: string): Promise<void> {
+    return this._productService.remove(id);
   }
 
   async setImage(id: string, file: Buffer | undefined): Promise<ProductDto> {

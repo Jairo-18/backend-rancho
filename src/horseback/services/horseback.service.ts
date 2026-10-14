@@ -10,6 +10,7 @@ import { definedOnly } from '../../shared/utils/defined-only.js';
 import { ilikeContains } from '../../shared/utils/ilike.js';
 import { uniqueSlug } from '../../shared/utils/slug.js';
 import { StorageService } from '../../uploads/services/storage.service.js';
+import { UploadsService } from '../../uploads/services/uploads.service.js';
 import {
   HORSEBACK_MIN_IMAGES,
   HORSEBACK_NOT_FOUND,
@@ -26,6 +27,7 @@ export class HorsebackService {
   constructor(
     private readonly _horsebackRepository: HorsebackRepository,
     private readonly _storageService: StorageService,
+    private readonly _uploadsService: UploadsService,
   ) {}
 
   async findPublic(): Promise<HorsebackDto[]> {
@@ -122,6 +124,21 @@ export class HorsebackService {
       { isActive: false },
     );
     if (!result.affected) throw new NotFoundException(HORSEBACK_NOT_FOUND);
+  }
+
+  /**
+   * Borrado definitivo: la fila y, en cascada, sus fotos y vínculos; luego los
+   * archivos de las fotos en el almacenamiento.
+   */
+  async remove(id: string): Promise<void> {
+    const entity = await this._horsebackRepository.findOne({
+      where: { id },
+      relations: { images: true },
+    });
+    if (!entity) throw new NotFoundException(HORSEBACK_NOT_FOUND);
+    const keys = entity.images.map((image) => image.storageKey);
+    await this._horsebackRepository.delete({ id });
+    await this._uploadsService.deleteQuietly(keys);
   }
 
   private toDto(ride: Horseback): HorsebackDto {

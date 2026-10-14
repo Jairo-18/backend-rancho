@@ -1,5 +1,8 @@
 import {
+  ArrayMaxSize,
+  IsArray,
   IsBoolean,
+  IsUUID,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -9,11 +12,12 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { DESCRIPTION_MAX_LENGTH } from '../../shared/utils/description.js';
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from '../../shared/utils/slug.js';
 
 export const MAX_ROOM_PRICE = 50_000_000;
 
-/** La habitación se crea inactiva: se activa al tener al menos 3 fotos. */
+/** La habitación se crea inactiva y se activa sola al subir la primera foto. */
 export class CreateRoomDto {
   /** @example "Cabaña del Roble" */
   @IsString()
@@ -31,8 +35,16 @@ export class CreateRoomDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(5000)
+  @MaxLength(DESCRIPTION_MAX_LENGTH)
   description: string;
+
+  /** Lo que incluye (wifi, jacuzzi, desayuno…): se muestran como etiquetas. */
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(30)
+  @IsString({ each: true })
+  @MaxLength(60, { each: true })
+  amenities?: string[];
 
   @IsOptional()
   @IsBoolean()
@@ -56,4 +68,11 @@ export class CreateRoomDto {
   @Min(0)
   @Max(MAX_ROOM_PRICE)
   weekendPrice: number;
+
+  /** Productos sugeridos con la habitación (se reemplaza la lista completa). */
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @IsUUID('all', { each: true })
+  productIds?: string[];
 }

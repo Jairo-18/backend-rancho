@@ -3,7 +3,7 @@ import { IsBoolean, IsOptional } from 'class-validator';
 import { CreateRoomDto } from './createRoom.dto.js';
 
 export class UpdateRoomDto extends PartialType(CreateRoomDto) {
-  /** Solo se puede activar con al menos 3 fotos. */
+  /** Solo se puede activar con al menos 1 foto. */
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;

@@ -34,7 +34,12 @@ export class ProductImageService {
     try {
       await this._productRepository.update(
         { id: productId },
-        { imageUrl: stored.url, imageStorageKey: stored.key },
+        {
+          imageUrl: stored.url,
+          imageStorageKey: stored.key,
+          // La primera foto lo publica.
+          ...(!product.imageUrl && { isActive: true }),
+        },
       );
     } catch (error) {
       await this._uploadsService.deleteQuietly([stored.key]);

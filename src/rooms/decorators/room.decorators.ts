@@ -46,7 +46,7 @@ export function CreateRoomDocs() {
   return applyDecorators(
     ApiOperation({
       summary:
-        'Crea la habitación inactiva; se activa al tener al menos 3 fotos',
+        'Crea la habitación inactiva; se activa sola al subir la primera foto',
     }),
     ApiOkResponse({ type: RoomDto }),
   );
@@ -55,11 +55,11 @@ export function CreateRoomDocs() {
 export function UpdateRoomDocs() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Actualiza la habitación (activar exige al menos 3 fotos)',
+      summary: 'Actualiza la habitación (activar exige al menos 1 foto)',
     }),
     ApiOkResponse({ type: RoomDto }),
     ApiBadRequestResponse({
-      description: 'Datos inválidos o menos de 3 fotos al activar',
+      description: 'Datos inválidos o sin fotos al activar',
     }),
     ApiNotFoundResponse({ description: 'Habitación no encontrada' }),
   );
@@ -103,5 +103,16 @@ export function DeleteRoomImageDocs() {
         'Borra una foto (una habitación activa no puede quedar con menos de 3)',
     }),
     ApiOkResponse({ type: RoomDto }),
+  );
+}
+
+export function DeletePermanentlyRoomDocs() {
+  return applyDecorators(
+    HttpCode(HttpStatus.NO_CONTENT),
+    ApiOperation({
+      summary:
+        'Borra la habitación para siempre, con sus fotos (no se puede deshacer)',
+    }),
+    ApiNoContentResponse(),
   );
 }

@@ -92,3 +92,14 @@ export function DeleteHorsebackImageDocs() {
     ApiOkResponse({ type: HorsebackDto }),
   );
 }
+
+export function DeletePermanentlyHorsebackDocs() {
+  return applyDecorators(
+    HttpCode(HttpStatus.NO_CONTENT),
+    ApiOperation({
+      summary:
+        'Borra la cabalgata para siempre, con sus fotos (no se puede deshacer)',
+    }),
+    ApiNoContentResponse(),
+  );
+}

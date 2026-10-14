@@ -10,6 +10,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { DESCRIPTION_MAX_LENGTH } from '../../shared/utils/description.js';
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from '../../shared/utils/slug.js';
 import type { UrlResolver } from '../../shared/interfaces/url-resolver.interface.js';
 import type { Product } from '../../shared/entities/product.entity.js';
@@ -61,7 +62,7 @@ export class CreateProductDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(2000)
+  @MaxLength(DESCRIPTION_MAX_LENGTH)
   description: string;
 
   /** COP. @example 28000 */

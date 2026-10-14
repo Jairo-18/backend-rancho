@@ -17,6 +17,7 @@ import { AdminListQueryDto } from '../../shared/dtos/admin-list-query.dto.js';
 import {
   CreateProductDocs,
   DeleteProductDocs,
+  DeletePermanentlyProductDocs,
   FindAdminProductsDocs,
   FindProductByIdDocs,
   SetProductImageDocs,
@@ -67,6 +68,12 @@ export class ProductController {
   @DeleteProductDocs()
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this._productUC.deactivate(id);
+  }
+
+  @Delete(':id/permanent')
+  @DeletePermanentlyProductDocs()
+  removePermanently(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this._productUC.remove(id);
   }
 
   @Put(':id/image')

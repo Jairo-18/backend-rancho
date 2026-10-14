@@ -16,6 +16,15 @@ export function FindPublicProductsDocs() {
   );
 }
 
+export function FindPublicProductDocs() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Detalle público de un producto activo, por slug',
+    }),
+    ApiOkResponse({ type: ProductDto }),
+  );
+}
+
 export function FindAdminProductsDocs() {
   return applyDecorators(
     ApiOperation({ summary: 'Todos los productos, con búsqueda y filtro' }),
@@ -65,5 +74,16 @@ export function SetProductImageDocs() {
       summary: 'Pone o reemplaza la foto principal (borra la anterior)',
     }),
     ApiOkResponse({ type: ProductDto }),
+  );
+}
+
+export function DeletePermanentlyProductDocs() {
+  return applyDecorators(
+    HttpCode(HttpStatus.NO_CONTENT),
+    ApiOperation({
+      summary:
+        'Borra el producto para siempre, con sus fotos (no se puede deshacer)',
+    }),
+    ApiNoContentResponse(),
   );
 }

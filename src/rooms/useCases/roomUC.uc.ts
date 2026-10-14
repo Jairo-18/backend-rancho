@@ -42,6 +42,10 @@ export class RoomUC {
     return this._roomService.deactivate(id);
   }
 
+  remove(id: string): Promise<void> {
+    return this._roomService.remove(id);
+  }
+
   async addImage(id: string, file: Buffer | undefined): Promise<RoomDto> {
     await this._roomImageService.add(id, file);
     return this._roomService.findById(id);
