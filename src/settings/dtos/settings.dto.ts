@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  IsArray,
   IsBoolean,
   IsEmail,
   IsIn,
@@ -38,6 +40,16 @@ export class SettingsDto {
   email: string;
   phone: string;
   socials: SocialLinksDto;
+  /** @example "3:00 p. m." */
+  checkInTime: string;
+  /** @example "12:00 m." */
+  checkOutTime: string;
+  sharedAreas: string;
+  petsPolicy: string;
+  recommendations: string[];
+  houseRules: string[];
+  /** Cada elemento "Título: texto". */
+  bookingTerms: string[];
 }
 
 // --- Actualización (parcial: solo se guardan las claves enviadas) ---
@@ -116,4 +128,45 @@ export class UpdateSettingsDto {
   @ValidateNested()
   @Type(() => UpdateSocialLinksDto)
   socials?: UpdateSocialLinksDto;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  checkInTime?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  checkOutTime?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(250)
+  sharedAreas?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  petsPolicy?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @IsString({ each: true })
+  @MaxLength(400, { each: true })
+  recommendations?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @IsString({ each: true })
+  @MaxLength(400, { each: true })
+  houseRules?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @IsString({ each: true })
+  @MaxLength(400, { each: true })
+  bookingTerms?: string[];
 }
