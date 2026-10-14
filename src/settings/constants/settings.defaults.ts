@@ -10,6 +10,12 @@ export interface SocialLinks {
 /** Todos los ajustes del sitio. Se guardan como filas key/value (jsonb) en `settings`. */
 export interface HotelSettings {
   hotelName: string;
+  /**
+   * Logo del hotel. En la base va relativo (/uploads/brand/...); la API lo
+   * devuelve absoluto. Vacío = el sitio usa la hoja de monstera. Se cambia con
+   * PUT /settings/logo, no con PUT /settings.
+   */
+  logoUrl: string;
   /** Cómo se nombran las habitaciones en la interfaz. */
   roomLabel: RoomLabel;
   /** Formato internacional, solo dígitos (ej. 573001234567). */
@@ -43,6 +49,7 @@ export interface HotelSettings {
 
 export const DEFAULT_SETTINGS: HotelSettings = {
   hotelName: 'Rancho Porvenir',
+  logoUrl: '',
   roomLabel: 'Cabañas',
   whatsappNumber: '',
   whatsappGreeting: '¡Hola! Quiero información sobre el Rancho Porvenir.',
@@ -83,3 +90,13 @@ export const DEFAULT_SETTINGS: HotelSettings = {
 export const SETTING_KEYS = Object.keys(
   DEFAULT_SETTINGS,
 ) as (keyof HotelSettings)[];
+
+/** Ajustes que se editan con PUT /settings (el logo tiene su propio endpoint). */
+export type EditableSettingKey = Exclude<keyof HotelSettings, 'logoUrl'>;
+export const EDITABLE_SETTING_KEYS = SETTING_KEYS.filter(
+  (key): key is EditableSettingKey => key !== 'logoUrl',
+);
+
+/** Carpeta del logo en el almacenamiento y fila (privada) con su clave de archivo. */
+export const LOGO_FOLDER = 'brand';
+export const LOGO_STORAGE_KEY_SETTING = 'logoStorageKey';

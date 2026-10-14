@@ -28,6 +28,8 @@ export class SocialLinksDto {
 
 export class SettingsDto {
   hotelName: string;
+  /** URL absoluta del logo; "" si no hay. */
+  logoUrl: string;
   /** @example "Cabañas" */
   roomLabel: RoomLabel;
   /** @example "573001234567" */

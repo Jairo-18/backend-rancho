@@ -4,14 +4,19 @@ import { definedOnly } from '../../shared/utils/defined-only.js';
 import { Setting } from '../../shared/entities/setting.entity.js';
 import {
   DEFAULT_SETTINGS,
+  EDITABLE_SETTING_KEYS,
   type HotelSettings,
   SETTING_KEYS,
 } from '../constants/settings.defaults.js';
 import { SettingRepository } from '../../shared/repositories/setting.repository.js';
+import { StorageService } from '../../uploads/services/storage.service.js';
 
 @Injectable()
 export class SettingsService {
-  constructor(private readonly _settingRepository: SettingRepository) {}
+  constructor(
+    private readonly _settingRepository: SettingRepository,
+    private readonly _storageService: StorageService,
+  ) {}
 
   /** Ajustes guardados combinados con los valores por defecto (claves desconocidas se ignoran). */
   async getAll(): Promise<HotelSettings> {
@@ -27,6 +32,9 @@ export class SettingsService {
       ...DEFAULT_SETTINGS.socials,
       ...(result.socials as object),
     };
+    if (typeof result.logoUrl === 'string' && result.logoUrl) {
+      result.logoUrl = this._storageService.publicUrl(result.logoUrl);
+    }
     return result as unknown as HotelSettings;
   }
 
@@ -37,7 +45,7 @@ export class SettingsService {
   async update(dto: UpdateSettingsDto): Promise<HotelSettings> {
     const current = await this.getAll();
     const rows: Setting[] = [];
-    for (const key of SETTING_KEYS) {
+    for (const key of EDITABLE_SETTING_KEYS) {
       const value = dto[key];
       if (value === undefined) continue;
       rows.push(
