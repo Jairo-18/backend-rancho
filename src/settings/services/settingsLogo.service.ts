@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import sharp from 'sharp';
 import { SettingRepository } from '../../shared/repositories/setting.repository.js';
 import { UploadsService } from '../../uploads/services/uploads.service.js';
 import {
@@ -22,7 +23,10 @@ export class SettingsLogoService {
     if (!file)
       throw new BadRequestException('Adjunta el logo en el campo "file"');
     const previousKey = await this.storedKey();
-    const [stored] = await this._uploadsService.storeImages([file], LOGO_FOLDER);
+    const [stored] = await this._uploadsService.storeImages(
+      [await trimMargins(file)],
+      LOGO_FOLDER,
+    );
     try {
       await this._settingRepository.save([
         this._settingRepository.create({ key: 'logoUrl', value: stored.url }),
@@ -50,5 +54,23 @@ export class SettingsLogoService {
       where: { key: LOGO_STORAGE_KEY_SETTING },
     });
     return typeof row?.value === 'string' ? row.value : null;
+  }
+}
+
+/**
+ * Quita los márgenes de color uniforme (p. ej. un logo en JPG cuadrado con
+ * mucho blanco alrededor) para que el logo llene su espacio en el sitio. Si el
+ * archivo no es una imagen válida se devuelve tal cual y el procesador de
+ * imágenes responde con el error de siempre.
+ */
+async function trimMargins(file: Buffer): Promise<Buffer> {
+  try {
+    return await sharp(file, { limitInputPixels: 100_000_000 })
+      .rotate()
+      .trim({ threshold: 18 })
+      .png()
+      .toBuffer();
+  } catch {
+    return file;
   }
 }
