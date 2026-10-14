@@ -21,7 +21,7 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 # Fotos subidas: montar aquí un volumen persistente en Dokploy
-# (p. ej. /var/lib/dokploy/rancho-storage → /app/uploads). Sin él, cada
+# (p. ej. /var/lib/dokploy/storage/ranchoporvenir-prod/uploads → /app/uploads). Sin él, cada
 # despliegue borra las fotos.
 RUN mkdir -p /app/uploads
 EXPOSE 4000

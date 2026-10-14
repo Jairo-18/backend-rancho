@@ -84,4 +84,4 @@ Flujo de una petición: **controller → useCase → service(s) → repository**
 ## Despliegue (Dokploy)
 
 `Dockerfile` multi-etapa (pnpm@10 fijado). El build sale en `dist/src/main.js` y `dist/typeorm.config.js`. Al arrancar aplica las migraciones pendientes y levanta la API en el puerto 4000.
-Montar un **volumen persistente en `/app/uploads`** (p. ej. `/var/lib/dokploy/rancho-storage`) y poner `UPLOADS_DIR=/app/uploads`; sin el volumen, cada despliegue borra las fotos.
+Montar un **volumen persistente en `/app/uploads`** (p. ej. `/var/lib/dokploy/storage/ranchoporvenir-prod/uploads`) y poner `UPLOADS_DIR=/app/uploads`; sin el volumen, cada despliegue borra las fotos.
